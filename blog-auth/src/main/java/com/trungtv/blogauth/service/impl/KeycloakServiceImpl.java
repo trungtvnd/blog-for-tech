@@ -7,16 +7,21 @@ import com.trungtv.blogauth.domain.UserDto;
 import com.trungtv.blogauth.exception.CustomBusinessException;
 import com.trungtv.blogauth.security.midleware.KeycloakClient;
 import com.trungtv.blogauth.security.midleware.OauthClient;
+import com.trungtv.blogauth.service.CacheService;
+import com.trungtv.blogauth.service.EmailService;
 import com.trungtv.blogauth.service.KeycloakService;
 import com.trungtv.blogauth.service.mapper.KeycloakMapper;
 import com.trungtv.blogauth.service.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class KeycloakServiceImpl implements KeycloakService {
     private final KeycloakClient keycloakClient;
 
@@ -25,6 +30,10 @@ public class KeycloakServiceImpl implements KeycloakService {
     private final KeycloakMapper keycloakMapper;
 
     private final UserMapper userMapper;
+
+    private final EmailService emailService;
+
+    private final CacheService cacheService;
 
     @Override
     public AccessTokenDTO login(LoginDto loginDto) {
@@ -54,6 +63,10 @@ public class KeycloakServiceImpl implements KeycloakService {
 
     public void validateRegister(RegisterDto dto){
         // validate
+        log.info("AuthUseCase:: validateVerifyToken >> " + dto.getEmail());
+        String existedToken = cacheService.get("KEY_REGISTER"+dto.getEmail());
+        Assert.hasText(existedToken, "Không tồn tại otp");
+        Assert.isTrue(existedToken.equals(dto.getOtpToken()), "Không khớp Otp/Đã hết hạn");
     }
 
 }

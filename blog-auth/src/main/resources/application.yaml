@@ -16,6 +16,25 @@ spring:
         jdbc:
           batch-size: 30
           order_inserts: true
+  redis:
+    host: localhost
+    port: 6379
+    ssl: false
+    timeout: 12m
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: trungtv.tbc@gmail.com
+    password: lqmenjdpybbwzxqz
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          timeout: 5000
+          connectiontimeout: 5000
+          writetimeout: 5000
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mysql://localhost:3306/blog-admin
