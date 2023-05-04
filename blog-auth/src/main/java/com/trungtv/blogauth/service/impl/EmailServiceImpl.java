@@ -6,6 +6,7 @@ import com.bastiaanjansen.otp.TOTP;
 import com.trungtv.blogauth.controller.dto.EmailDto;
 import com.trungtv.blogauth.service.CacheService;
 import com.trungtv.blogauth.service.EmailService;
+import com.trungtv.blogauth.service.GenerateOtpCodeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -27,17 +28,15 @@ public class EmailServiceImpl implements EmailService {
 
     private final CacheService cacheService;
 
-    private static final TOTP totp = new TOTP.Builder(SecretGenerator.generate())
-            .withPasswordLength(6)
-            .withAlgorithm(HMACAlgorithm.SHA512)
-            .withPeriod(Duration.ofSeconds(60)).build();
+    private final GenerateOtpCodeService generateOtpCodeService;
+
 
     @Override
     public void sendEmailRegister(EmailDto dto) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(dto.getTo());
         mailMessage.setSubject(dto.getSubject());
-        String otp= generateOtp();
+        String otp= generateOtpCodeService.generateOtp();
         mailMessage.setText(otp);
         cacheService.set("KEY_REGISTER" + dto.getTo(), otp, 600);
         mailMessage.setFrom(emailFrom);
@@ -70,8 +69,4 @@ public class EmailServiceImpl implements EmailService {
         javaMailSender.send(msg);
     }
 
-    public String generateOtp() {
-        String otp = totp.now().substring(1, 5);
-        return otp;
-    }
 }
