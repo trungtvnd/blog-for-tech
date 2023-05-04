@@ -1,0 +1,63 @@
+server:
+  port: 8088
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  application:
+    name: BLOG-AUTH
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5Dialect
+    show-sql: true
+    properties:
+      hibernate:
+        naming:
+          physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        jdbc:
+          batch-size: 30
+          order_inserts: true
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://localhost:3306/blog-admin
+    driverClassName: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 12345678
+    hikari:
+      idle-timeout: 10000
+      maximum-pool-size: 3
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: '${EUREKA_URI:http://localhost:8761/eureka/}'
+logging:
+  level:
+    org.hibernate.*: ERROR
+keycloak:
+  ssl-required: none
+  realm: blog-for-tech
+  resource: webapp
+  bearer-only: true
+  auth-server-url: http://localhost:8181
+  credentials:
+    secret: lAysXUhEVoHCpAG74DulMzkb2llReEOM
+oauth:
+  client-id: webapp
+  client-secret: lAysXUhEVoHCpAG74DulMzkb2llReEOM
+  scope: openid microprofile-jwt
+  token-url: http://localhost:8181/realms/blog-for-tech/protocol/openid-connect/token
+  user-info-url: http://localhost:8181/realms/blog-for-tech/protocol/openid-connect/userinfo
+  user-logout-url: http://localhost:8181/realms/blog-for-tech/protocol/openid-connect/logout
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 30000
+        readTimeout: 30000
+        loggerLevel: basic
+  application-name:
+    keycloak-server:
+      url: http://localhost:8181
+      name: keycloak
+    booking-service:
+      url: http://192.168.68.69:9380/booking
+      name: booking

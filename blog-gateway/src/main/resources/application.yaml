@@ -1,0 +1,42 @@
+server:
+  port: 8080
+eureka:
+  client:
+    service-url:
+        defaultZone: '${EUREKA_URI:http://localhost:8761/eureka}'
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 1000MB
+      max-request-size: 1000MB
+      file-size-threshold: 20KB
+  application:
+
+
+    name: blog-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: blog-web-app
+          uri: lb://BLOG-WEB-APP
+          predicates:
+            - Path=/web-app/**
+          filters:
+            - StripPrefix=1
+        - id: blog-auth-service
+          uri: lb://BLOG-AUTH
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=1
+ribbon:
+  ReadTimeout: 90000
+  ConnectTimeout: 90000
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
