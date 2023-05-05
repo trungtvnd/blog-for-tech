@@ -2,10 +2,7 @@ package com.trungtv.blogauth.service.impl;
 
 import com.trungtv.blogauth.constant.Constant;
 import com.trungtv.blogauth.constant.ConstantErrorCode;
-import com.trungtv.blogauth.controller.dto.AccessTokenDTO;
-import com.trungtv.blogauth.controller.dto.LoginDto;
-import com.trungtv.blogauth.controller.dto.RegisterDto;
-import com.trungtv.blogauth.controller.dto.UserDto;
+import com.trungtv.blogauth.controller.dto.*;
 import com.trungtv.blogauth.exception.CustomBusinessException;
 import com.trungtv.blogauth.security.midleware.KeycloakClient;
 import com.trungtv.blogauth.security.midleware.OauthClient;
@@ -23,7 +20,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -77,4 +79,22 @@ public class KeycloakServiceImpl implements KeycloakService {
         Assert.isTrue(existedToken.equals(dto.getOtpToken()), MessageUtils.getMessage(ExceptionUtil.getMessageError(ConstantErrorCode.ValidateErrorCode.OTP_WRONG)));
     }
 
+    @Override
+    public AccessTokenDTO refreshToken(String token) {
+        MultiValueMap<String, String> payloads = new LinkedMultiValueMap<>();
+        payloads.add("refresh_token", token);
+        return oauthClient.genToken(payloads);
+    }
+
+    @Override
+    public void changePassword(ChangePasswordDto dto) {
+        //validate
+
+        keycloakClient.changePassword(dto.getUsername(), dto.getPassword());
+    }
+
+    @Override
+    public void forgotPassword(NewPasswordRequest dto) {
+        //validate
+    }
 }

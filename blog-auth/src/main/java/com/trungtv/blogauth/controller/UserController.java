@@ -1,16 +1,17 @@
 package com.trungtv.blogauth.controller;
 
+import com.trungtv.blogauth.controller.dto.ChangePasswordDto;
 import com.trungtv.blogauth.controller.dto.LoginDto;
+import com.trungtv.blogauth.controller.dto.NewPasswordRequest;
 import com.trungtv.blogauth.controller.dto.RegisterDto;
 import com.trungtv.blogauth.controller.response.BaseResponse;
 import com.trungtv.blogauth.service.KeycloakService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.constraints.NotBlank;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,5 +37,27 @@ public class UserController {
                 .build());
     }
 
+    @GetMapping(value = "/token/refresh")
+    public ResponseEntity refreshToken(@NotBlank(message = "{common.error.must.be.not.null}") String token) {
+        return ResponseEntity.ok(BaseResponse.builder()
+                .code(200)
+                .data(keycloakService.refreshToken(token))
+                .build());
+    }
 
+    @PostMapping(value = "/change-password")
+    public ResponseEntity<?> changePassword (@RequestBody ChangePasswordDto dto){
+       keycloakService.changePassword(dto);
+        return ResponseEntity.ok(BaseResponse.builder()
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(value = "/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody NewPasswordRequest newPasswordRequest) {
+        keycloakService.forgotPassword(newPasswordRequest);
+        return ResponseEntity.ok(BaseResponse.builder()
+                .code(200)
+                .build());
+    }
 }

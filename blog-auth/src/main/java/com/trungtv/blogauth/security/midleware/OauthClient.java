@@ -49,4 +49,13 @@ public class OauthClient {
         return keycloakFeign.login(formParams);
     }
 
+    public AccessTokenDTO genToken(MultiValueMap<String, String> payloads){
+        payloads.add("grant_type", payloads.containsKey("refresh_token") ? "refresh_token" : "password");
+        payloads.add("client_id", clientId);
+        payloads.add("client_secret", clientSecret);
+        payloads.add("scope", scope);
+        return keycloakFeign.login(payloads);
+    }
+
+
 }
