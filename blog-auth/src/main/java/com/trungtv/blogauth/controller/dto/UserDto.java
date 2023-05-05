@@ -1,4 +1,4 @@
-package com.trungtv.blogauth.domain;
+package com.trungtv.blogauth.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -24,13 +25,13 @@ public class UserDto implements Serializable {
     private String avatar;
     private String phoneNumber;
     private Integer isDeleted;
-    private Date createdAt;
-    private Date updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private String createdBy;
     private String updatedBy;
     private Integer loginCount;
     private Integer gender;
-    private Date birthday;
+    private Date dateOfBirth;
     private Integer isActive;
     private String accessToken;
     private String refreshToken;

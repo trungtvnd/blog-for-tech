@@ -1,17 +1,23 @@
 package com.trungtv.blogauth.service.impl;
 
+import com.trungtv.blogauth.constant.Constant;
+import com.trungtv.blogauth.constant.ConstantErrorCode;
 import com.trungtv.blogauth.controller.dto.AccessTokenDTO;
 import com.trungtv.blogauth.controller.dto.LoginDto;
 import com.trungtv.blogauth.controller.dto.RegisterDto;
-import com.trungtv.blogauth.domain.UserDto;
+import com.trungtv.blogauth.controller.dto.UserDto;
 import com.trungtv.blogauth.exception.CustomBusinessException;
 import com.trungtv.blogauth.security.midleware.KeycloakClient;
 import com.trungtv.blogauth.security.midleware.OauthClient;
 import com.trungtv.blogauth.service.CacheService;
 import com.trungtv.blogauth.service.EmailService;
 import com.trungtv.blogauth.service.KeycloakService;
+import com.trungtv.blogauth.service.UserService;
 import com.trungtv.blogauth.service.mapper.KeycloakMapper;
 import com.trungtv.blogauth.service.mapper.UserMapper;
+import com.trungtv.blogauth.util.ExceptionUtil;
+import com.trungtv.blogauth.util.MessageUtils;
+import com.trungtv.blogauth.util.PasswordValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -24,21 +30,16 @@ import org.springframework.util.ObjectUtils;
 @Slf4j
 public class KeycloakServiceImpl implements KeycloakService {
     private final KeycloakClient keycloakClient;
-
     private final OauthClient oauthClient;
-
     private final KeycloakMapper keycloakMapper;
-
     private final UserMapper userMapper;
-
-    private final EmailService emailService;
-
     private final CacheService cacheService;
+    private final UserService userService;
 
     @Override
     public AccessTokenDTO login(LoginDto loginDto) {
-        AccessTokenDTO response =  oauthClient.login(loginDto);
-        if (ObjectUtils.isEmpty(response)){
+        AccessTokenDTO response = oauthClient.login(loginDto);
+        if (ObjectUtils.isEmpty(response)) {
             throw new CustomBusinessException("invalid.user.or.password");
         }
         return response;
@@ -57,16 +58,23 @@ public class KeycloakServiceImpl implements KeycloakService {
         UserRepresentation userRepresentation = keycloakMapper.toRepresentationDto(userDto);
         keycloakClient.createUser(userRepresentation, true);
         var existedUser = findAllUserByUsername(registerDto.getUsername());
-        if (ObjectUtils.isEmpty(existedUser)) throw new CustomBusinessException("invalid.user.or.password");
+        if (ObjectUtils.isEmpty(existedUser))
+            throw new CustomBusinessException(ConstantErrorCode.ErrorCode.ENTITY_NOT_FOUND);
+        userService.create(userMapper.toEntity(userDto));
         return login(new LoginDto(registerDto.getUsername(), registerDto.getPassword()));
     }
 
-    public void validateRegister(RegisterDto dto){
+    public void validateRegister(RegisterDto dto) {
         // validate
         log.info("AuthUseCase:: validateVerifyToken >> " + dto.getEmail());
-        String existedToken = cacheService.get("KEY_REGISTER"+dto.getEmail());
-        Assert.hasText(existedToken, "Không tồn tại otp");
-        Assert.isTrue(existedToken.equals(dto.getOtpToken()), "Không khớp Otp/Đã hết hạn");
+        Assert.hasText(dto.getEmail(), MessageUtils.getMessage(ExceptionUtil.getMessageError(ConstantErrorCode.ValidateErrorCode.EMAIL_MUST_NOT_BE_NULL)));
+        Assert.hasText(dto.getUsername(), MessageUtils.getMessage(ExceptionUtil.getMessageError(ConstantErrorCode.ValidateErrorCode.USERNAME_MUST_NOT_BE_NULL)));
+        Assert.hasText(dto.getPassword(), MessageUtils.getMessage(ExceptionUtil.getMessageError(ConstantErrorCode.ValidateErrorCode.PASSWORD_MUST_NOT_BE_NULL)));
+        if (!PasswordValidator.isValid(dto.getPassword()))
+            throw new CustomBusinessException(ConstantErrorCode.ValidateErrorCode.PASSWORD_WRONG_FORMAT);
+        String existedToken = cacheService.get(Constant.RedisConstant.KEY_REGISTER + dto.getEmail());
+        Assert.hasText(existedToken, MessageUtils.getMessage(ExceptionUtil.getMessageError(ConstantErrorCode.ValidateErrorCode.OTP_NOT_EXISTED)));
+        Assert.isTrue(existedToken.equals(dto.getOtpToken()), MessageUtils.getMessage(ExceptionUtil.getMessageError(ConstantErrorCode.ValidateErrorCode.OTP_WRONG)));
     }
 
 }

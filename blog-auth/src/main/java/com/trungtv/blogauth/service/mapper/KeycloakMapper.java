@@ -1,6 +1,6 @@
 package com.trungtv.blogauth.service.mapper;
 
-import com.trungtv.blogauth.domain.UserDto;
+import com.trungtv.blogauth.controller.dto.UserDto;
 import com.trungtv.blogauth.security.midleware.KeycloakClient;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.mapstruct.Mapper;

@@ -10,7 +10,7 @@ import java.util.ResourceBundle;
 @Slf4j
 public class MessageUtils {
 
-    private final static String BASE_NAME = "i18n.messages";
+    private final static String BASE_NAME = "messages";
 
     public static String getMessage(String code, Locale locale) {
         return getMessage(code, locale, new Object[]{});

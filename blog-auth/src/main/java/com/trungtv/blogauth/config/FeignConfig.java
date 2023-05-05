@@ -9,8 +9,8 @@ public class FeignConfig {
     @Bean
     public RequestInterceptor requestInterceptor() {
         return requestTemplate -> {
-            requestTemplate.header("Content-Type", "application/x-www-form-urlencoded","application/json");
-            requestTemplate.header("Accept", "application/x-www-form-urlencoded","application/json");
+            requestTemplate.header("Content-Type", "application/x-www-form-urlencoded", "application/json");
+            requestTemplate.header("Accept", "application/x-www-form-urlencoded", "application/json");
         };
     }
 
