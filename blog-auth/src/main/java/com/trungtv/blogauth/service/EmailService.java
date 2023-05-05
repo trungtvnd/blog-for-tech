@@ -12,4 +12,6 @@ public interface EmailService {
     @Async
     public void sendEmailAttach(String toEmail, String subject, String message) throws MessagingException;
 
+    void sendEmailVerifyForgotPassword(EmailDto mail) throws MessagingException;
+
 }

@@ -28,4 +28,13 @@ public class OtpController {
         return ResponseEntity.ok(baseResponse);
     }
 
+    @PostMapping(value = "/send-forgot-password")
+    public ResponseEntity<BaseResponse> sendForgotPassword(@RequestBody EmailDto payload) throws MessagingException {
+        emailService.sendEmailVerifyForgotPassword(payload);
+        BaseResponse baseResponse = BaseResponse.builder()
+                .code(200)
+                .build();
+        return ResponseEntity.ok(baseResponse);
+    }
+
 }

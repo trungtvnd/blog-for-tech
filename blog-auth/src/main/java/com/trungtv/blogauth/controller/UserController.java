@@ -18,8 +18,9 @@ import javax.validation.constraints.NotBlank;
 @RequestMapping("/api/v1/auth")
 public class UserController {
     private final KeycloakService keycloakService;
+
     @PostMapping("/login")
-    public ResponseEntity<BaseResponse> login (@RequestBody LoginDto loginDto){
+    public ResponseEntity<BaseResponse> login(@RequestBody LoginDto loginDto) {
         return ResponseEntity.ok(BaseResponse
                 .builder()
                 .code(200)
@@ -29,7 +30,7 @@ public class UserController {
 
     @PostMapping("/register")
     @Transactional
-    public ResponseEntity<BaseResponse> register (@RequestBody RegisterDto registerDto){
+    public ResponseEntity<BaseResponse> register(@RequestBody RegisterDto registerDto) {
         return ResponseEntity.ok(BaseResponse
                 .builder()
                 .code(200)
@@ -38,7 +39,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/token/refresh")
-    public ResponseEntity refreshToken(@NotBlank(message = "{common.error.must.be.not.null}") String token) {
+    public ResponseEntity<BaseResponse> refreshToken(@NotBlank(message = "{common.error.must.be.not.null}") String token) {
         return ResponseEntity.ok(BaseResponse.builder()
                 .code(200)
                 .data(keycloakService.refreshToken(token))
@@ -46,15 +47,15 @@ public class UserController {
     }
 
     @PostMapping(value = "/change-password")
-    public ResponseEntity<?> changePassword (@RequestBody ChangePasswordDto dto){
-       keycloakService.changePassword(dto);
+    public ResponseEntity<BaseResponse> changePassword(@RequestBody ChangePasswordDto dto) {
+        keycloakService.changePassword(dto);
         return ResponseEntity.ok(BaseResponse.builder()
                 .code(200)
                 .build());
     }
 
     @PostMapping(value = "/forgot-password")
-    public ResponseEntity<?> forgotPassword(@RequestBody NewPasswordRequest newPasswordRequest) {
+    public ResponseEntity<BaseResponse> forgotPassword(@RequestBody NewPasswordRequest newPasswordRequest) {
         keycloakService.forgotPassword(newPasswordRequest);
         return ResponseEntity.ok(BaseResponse.builder()
                 .code(200)

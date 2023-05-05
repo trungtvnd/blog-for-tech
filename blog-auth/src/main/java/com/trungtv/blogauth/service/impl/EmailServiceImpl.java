@@ -3,6 +3,7 @@ package com.trungtv.blogauth.service.impl;
 import com.bastiaanjansen.otp.HMACAlgorithm;
 import com.bastiaanjansen.otp.SecretGenerator;
 import com.bastiaanjansen.otp.TOTP;
+import com.trungtv.blogauth.constant.Constant;
 import com.trungtv.blogauth.controller.dto.EmailDto;
 import com.trungtv.blogauth.service.CacheService;
 import com.trungtv.blogauth.service.EmailService;
@@ -69,4 +70,17 @@ public class EmailServiceImpl implements EmailService {
         javaMailSender.send(msg);
     }
 
+    @Override
+    public void sendEmailVerifyForgotPassword(EmailDto mail) throws MessagingException {
+        //validate
+
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(mail.getTo());
+        mailMessage.setSubject(mail.getSubject());
+        String otp= generateOtpCodeService.generateOtp();
+        mailMessage.setText(otp);
+        cacheService.set(Constant.RedisConstant.KEY_FORGOT_PASSWORD + mail.getTo(), otp, 600);
+        mailMessage.setFrom(emailFrom);
+        javaMailSender.send(mailMessage);
+    }
 }

@@ -7,6 +7,7 @@ public class Constant {
 
     public static class RedisConstant {
         public static String KEY_REGISTER = "KEY_REGISTER";
+        public static String KEY_FORGOT_PASSWORD = "KEY_FORGOT_PASSWORD";
     }
 
     public static class RegularExpressionValidate {
