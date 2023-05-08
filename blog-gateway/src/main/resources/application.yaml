@@ -12,20 +12,18 @@ spring:
       max-request-size: 1000MB
       file-size-threshold: 20KB
   application:
-
-
-    name: blog-gateway
+    name: blog-gateway-service
   cloud:
     gateway:
       routes:
         - id: blog-web-app
-          uri: lb://BLOG-WEB-APP
+          uri: lb://blog-web-app
           predicates:
             - Path=/web-app/**
           filters:
             - StripPrefix=1
         - id: blog-auth-service
-          uri: lb://BLOG-AUTH
+          uri: lb://blog-auth-service
           predicates:
             - Path=/auth/**
           filters:
