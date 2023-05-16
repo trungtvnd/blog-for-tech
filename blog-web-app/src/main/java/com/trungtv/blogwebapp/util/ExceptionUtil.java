@@ -1,0 +1,16 @@
+package com.trungtv.blogwebapp.util;
+
+public class ExceptionUtil {
+    private ExceptionUtil(){
+        //
+    }
+
+    public static String getMessageError(String errorCode) {
+        return  errorCode.split("-")[1];
+    }
+
+    public static int getCodeError(String errorCode) {
+        return Integer.parseInt(errorCode.split("-")[0]);
+
+    }
+}
