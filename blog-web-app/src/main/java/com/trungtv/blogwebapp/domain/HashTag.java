@@ -18,6 +18,7 @@ public class HashTag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "is_deleted")
     private Integer isDeleted;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
