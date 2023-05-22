@@ -59,6 +59,7 @@ keycloak:
   auth-server-url: http://localhost:8181
   credentials:
     secret: lAysXUhEVoHCpAG74DulMzkb2llReEOM
+  use-resource-role-mappings: true
 oauth:
   client-id: webapp
   client-secret: lAysXUhEVoHCpAG74DulMzkb2llReEOM

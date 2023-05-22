@@ -1,14 +1,18 @@
 package com.trungtv.blogauth.security.midleware;
 
 import lombok.extern.slf4j.Slf4j;
+import org.keycloak.KeycloakPrincipal;
+import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.IdentityProvidersResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
-import org.keycloak.representations.idm.CredentialRepresentation;
-import org.keycloak.representations.idm.RoleRepresentation;
-import org.keycloak.representations.idm.UserRepresentation;
-import org.keycloak.representations.idm.UserSessionRepresentation;
+import org.keycloak.representations.AccessToken;
+import org.keycloak.representations.AccessTokenResponse;
+import org.keycloak.representations.idm.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -21,6 +25,7 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -51,6 +56,18 @@ public class KeycloakClient {
             log.error("Error when get list user from keycloak: {}", e.getMessage());
             return List.of();
         }
+    }
+
+    public List<String> getResourceRoles(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        KeycloakPrincipal<KeycloakSecurityContext> keycloakPrincipal= (KeycloakPrincipal<KeycloakSecurityContext>) authentication.getPrincipal();
+        KeycloakSecurityContext keycloakSecurityContext = keycloakPrincipal.getKeycloakSecurityContext();
+        Map<String, AccessToken.Access> roles = keycloakSecurityContext.getToken().getResourceAccess();
+        return new ArrayList<>(roles.get(clientId).getRoles());
+
+    }
+    public List<IdentityProviderRepresentation> getIdentityProvider(){
+        return keycloak.realm(realm).identityProviders().findAll();
     }
 
     public List<UserSessionRepresentation> getUserSessions(String username) {

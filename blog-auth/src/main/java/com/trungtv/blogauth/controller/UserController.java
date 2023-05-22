@@ -5,6 +5,7 @@ import com.trungtv.blogauth.controller.dto.LoginDto;
 import com.trungtv.blogauth.controller.dto.NewPasswordRequest;
 import com.trungtv.blogauth.controller.dto.RegisterDto;
 import com.trungtv.blogauth.controller.response.BaseResponse;
+import com.trungtv.blogauth.security.midleware.KeycloakClient;
 import com.trungtv.blogauth.service.KeycloakService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import javax.validation.constraints.NotBlank;
 @RequestMapping("/api/v1/auth")
 public class UserController {
     private final KeycloakService keycloakService;
+    private final KeycloakClient keycloakClient;
 
     @PostMapping("/login")
     public ResponseEntity<BaseResponse> login(@RequestBody LoginDto loginDto) {
@@ -58,6 +60,15 @@ public class UserController {
     public ResponseEntity<BaseResponse> forgotPassword(@RequestBody NewPasswordRequest newPasswordRequest) {
         keycloakService.forgotPassword(newPasswordRequest);
         return ResponseEntity.ok(BaseResponse.builder()
+                .code(200)
+                .build());
+    }
+
+    @PostMapping(value = "/get-user")
+    public ResponseEntity<BaseResponse> getUser() {
+
+        return ResponseEntity.ok(BaseResponse.builder()
+                .data(keycloakClient.getUserSessions("trungtvnd"))
                 .code(200)
                 .build());
     }
